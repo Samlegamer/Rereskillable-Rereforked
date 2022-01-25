@@ -6,14 +6,14 @@ import floris0106.rereskillablerereforked.common.item.Items;
 import floris0106.rereskillablerereforked.common.network.SyncConfig;
 import floris0106.rereskillablerereforked.common.network.SyncSkills;
 import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -30,7 +30,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         ItemStack item = event.getItemStack();
         Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
         SkillModel model = SkillModel.get(player);
@@ -44,7 +44,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         ItemStack item = event.getItemStack();
         Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
         SkillModel model = SkillModel.get(player);
@@ -58,7 +58,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickItem(PlayerInteractEvent.RightClickItem event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         ItemStack item = event.getItemStack();
         
         if (!player.isCreative() && !SkillModel.get(player).canUseItem(player, item))
@@ -70,7 +70,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickEntity(PlayerInteractEvent.EntityInteract event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         Entity entity = event.getTarget();
         ItemStack item = event.getItemStack();
         
@@ -86,7 +86,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onAttackEntity(AttackEntityEvent event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         
         if (player != null)
         {
@@ -102,11 +102,11 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChangeEquipment(LivingEquipmentChangeEvent event)
     {
-        if (event.getEntity() instanceof PlayerEntity)
+        if (event.getEntity() instanceof Player)
         {
-            PlayerEntity player = (PlayerEntity) event.getEntity();
+            Player player = (Player) event.getEntity();
             
-            if (!player.isCreative() && event.getSlot().getType() == EquipmentSlotType.Group.ARMOR)
+            if (!player.isCreative() && event.getSlot().getType() == EquipmentSlot.Type.ARMOR)
             {
                 ItemStack item = event.getTo();
                 
@@ -122,7 +122,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityDrops(LivingDropsEvent event)
     {
-        if (Config.getDisableWool() && event.getEntity() instanceof SheepEntity)
+        if (Config.getDisableWool() && event.getEntity() instanceof Sheep)
         {
             event.getDrops().removeIf(item -> ItemTags.getAllTags().getTag(new ResourceLocation("minecraft", "wool")).contains(item.getItem().getItem()));
         }
@@ -131,16 +131,16 @@ public class EventHandler
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event)
     {
-        if (Config.getDeathReset() && event.getEntity() instanceof PlayerEntity)
+        if (Config.getDeathReset() && event.getEntity() instanceof Player)
         {
-            SkillModel.get((PlayerEntity) event.getEntity()).skillLevels = new int[]{1, 1, 1, 1, 1, 1, 1, 1};
+            SkillModel.get((Player) event.getEntity()).skillLevels = new int[]{1, 1, 1, 1, 1, 1, 1, 1};
         }
     }
     
     @SubscribeEvent
     public void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event)
     {
-        if (event.getObject() instanceof PlayerEntity)
+        if (event.getObject() instanceof Player)
         {
             SkillModel skillModel = new SkillModel();
             SkillProvider provider = new SkillProvider(skillModel);

@@ -1,24 +1,43 @@
 package floris0106.rereskillablerereforked.common.capabilities;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nullable;
-
-public class SkillStorage implements Capability.IStorage<SkillModel>
+public class SkillStorage implements ICapabilitySerializable<Tag>
 {
-    @Nullable
-    @Override
-    public INBT writeNBT(Capability<SkillModel> capability, SkillModel instance, Direction side)
+	public SkillModel mdl;
+	
+	/*
+	@Nullable
+    public Tag serializeNBT(Capability<SkillModel> capability, , Direction side)
     {
         return instance.serializeNBT();
     }
     
-    @Override
-    public void readNBT(Capability<SkillModel> capability, SkillModel instance, Direction side, INBT nbt)
+    public void deserializeNBT(Capability<SkillModel> capability, SkillModel instance, Direction side, Tag nbt)
     {
-        instance.deserializeNBT((CompoundNBT) nbt);
-    }
+        instance.deserializeNBT((CompoundTag) nbt);
+    }*/
+
+	@Override
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
+	{
+		return null;
+	}
+
+	@Override
+	public Tag serializeNBT()
+	{
+		return mdl.serializeNBT();
+	}
+
+	@Override
+	public void deserializeNBT(Tag nbt)
+	{
+		mdl.deserializeNBT((CompoundTag) nbt);
+	}
 }

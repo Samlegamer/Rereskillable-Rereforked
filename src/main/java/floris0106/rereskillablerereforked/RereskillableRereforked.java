@@ -1,21 +1,19 @@
 package floris0106.rereskillablerereforked;
 
+import java.util.Optional;
+
 import floris0106.rereskillablerereforked.client.Keybind;
 import floris0106.rereskillablerereforked.client.Overlay;
-import floris0106.rereskillablerereforked.client.screen.InventoryTabs;
 import floris0106.rereskillablerereforked.client.Tooltip;
+import floris0106.rereskillablerereforked.client.screen.InventoryTabs;
 import floris0106.rereskillablerereforked.common.Config;
-import floris0106.rereskillablerereforked.common.compat.CuriosCompat;
 import floris0106.rereskillablerereforked.common.EventHandler;
-import floris0106.rereskillablerereforked.common.capabilities.SkillModel;
-import floris0106.rereskillablerereforked.common.capabilities.SkillStorage;
+import floris0106.rereskillablerereforked.common.capabilities.SkillCapability;
 import floris0106.rereskillablerereforked.common.commands.ModCommands;
+import floris0106.rereskillablerereforked.common.compat.CuriosCompat;
 import floris0106.rereskillablerereforked.common.item.Items;
-import floris0106.rereskillablerereforked.common.network.SkillWarning;
-import floris0106.rereskillablerereforked.common.network.RequestLevelUp;
-import floris0106.rereskillablerereforked.common.network.SyncConfig;
-import floris0106.rereskillablerereforked.common.network.SyncSkills;
-import net.minecraft.util.ResourceLocation;
+import floris0106.rereskillablerereforked.common.network.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.ModList;
@@ -23,11 +21,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-
-import java.util.Optional;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 @Mod(RereskillableRereforked.MOD_ID)
 public class RereskillableRereforked
@@ -47,9 +43,10 @@ public class RereskillableRereforked
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        CapabilityManager.INSTANCE.register(SkillModel.class, new SkillStorage(), () -> { throw new UnsupportedOperationException("No Implementation!"); });
+    	SkillCapability.INSTANCE.isRegistered();
+        //CapabilityManager.INSTANCE.get(SkillCapability.INSTANCE.getName());
 
-        Config.load();
+    	Config.load();
 
         network = NetworkRegistry.newSimpleChannel(new ResourceLocation(MOD_ID, "network"), () -> "1.0", s -> true, s -> true);
         network.registerMessage(0, SyncSkills.class, SyncSkills::encode, SyncSkills::new, SyncSkills::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));

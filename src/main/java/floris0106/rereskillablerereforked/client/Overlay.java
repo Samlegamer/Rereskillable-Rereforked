@@ -1,29 +1,33 @@
 package floris0106.rereskillablerereforked.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import floris0106.rereskillablerereforked.common.Config;
 import floris0106.rereskillablerereforked.client.screen.SkillScreen;
 import floris0106.rereskillablerereforked.common.capabilities.SkillCapability;
 import floris0106.rereskillablerereforked.common.capabilities.SkillModel;
 import floris0106.rereskillablerereforked.common.skills.Requirement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Overlay extends AbstractGui
+public class Overlay extends GuiComponent
 {
-    private static List<Requirement> requirements = null;
+    public Overlay(){ super(); }
+
+	private static List<Requirement> requirements = null;
     private static int showTicks = 0;
     
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onRenderOverlay(RenderGameOverlayEvent.Post event)
     {
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && showTicks > 0)
@@ -32,9 +36,9 @@ public class Overlay extends AbstractGui
             
             if (minecraft.player.getCapability(SkillCapability.INSTANCE).isPresent())
             {
-                MatrixStack stack = event.getMatrixStack();
+                PoseStack stack = event.getMatrixStack();
     
-                minecraft.textureManager.bind(SkillScreen.RESOURCES);
+                minecraft.textureManager.bindForSetup(SkillScreen.RESOURCES);
                 GL11.glEnable(GL11.GL_BLEND);
     
                 int cx = event.getWindow().getGuiScaledWidth() / 2;
@@ -42,9 +46,9 @@ public class Overlay extends AbstractGui
     
                 blit(stack, cx - 71, cy - 4, 0, 194, 142, 40);
     
-                String message = new TranslationTextComponent("overlay.message").getString();
+                String message = new TranslatableComponent("overlay.message").getString();
                 minecraft.font.drawShadow(stack, message, cx - minecraft.font.width(message) / 2, cy, 0xFF5555);
-    
+                
                 for (int i = 0; i < requirements.size(); i++)
                 {
                     Requirement requirement = requirements.get(i);
@@ -55,7 +59,7 @@ public class Overlay extends AbstractGui
                     int u = Math.min(requirement.level, maxLevel - 1) / (maxLevel / 4) * 16 + 176;
                     int v = requirement.skill.index * 16 + 128;
         
-                    minecraft.textureManager.bind(SkillScreen.RESOURCES);
+                    minecraft.textureManager.bindForSetup(SkillScreen.RESOURCES);
                     blit(stack, x, y, u, v, 16, 16);
         
                     String level = Integer.toString(requirement.level);
